@@ -26,6 +26,12 @@ public class GenerateManifestCmd extends AbstractDiagnosticCmd {
          manifest.put("diagToolVersion", getToolVersion());
          manifest.put("collectionDate", SystemProperties.getUtcDateString());
          InputParams params = context.getInputParams();
+
+         Map<String, Object> aliases = context.getMappedAttribute("aliases");
+         if(context.getInputParams().useAliases() && aliases!=null){
+
+         }
+
          manifest.put("inputs", params.toString());
 
          File manifestFile = new File(context.getTempDir() + SystemProperties.fileSeparator + "manifest.json");

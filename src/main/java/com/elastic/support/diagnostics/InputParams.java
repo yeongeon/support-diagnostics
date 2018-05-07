@@ -62,8 +62,18 @@ public class InputParams {
    @Parameter(names = {"--threads"}, description = "Collect only hot threads.")
    private boolean hotThreads = false;
 
+   @Parameter(names = {"--aliases"}, description = "Use alias instead of real hostnames or ip addresses.")
+   private boolean aliases = false;
+
    private boolean secured = false;
    private boolean wasPortSet = false;
+
+   public boolean useAliases() {
+      return aliases;
+   }
+   public void setAliases(boolean useAliases) {
+      this.aliases = useAliases;
+   }
 
    public boolean isHotThreads() {
       return hotThreads;
