@@ -1,40 +1,104 @@
-diagnostics:
-  - com.elastic.support.diagnostics.commands.GenerateManifestCmd
-  - com.elastic.support.diagnostics.commands.RestModuleSetupCmd
-  - com.elastic.support.diagnostics.commands.VersionAndClusterNameCheckCmd
-  - com.elastic.support.diagnostics.commands.RunClusterQueriesCmd
-  - com.elastic.support.diagnostics.commands.RunCommercialQueriesCmd
-  - com.elastic.support.diagnostics.commands.HostIdentifierCmd
-  - com.elastic.support.diagnostics.commands.LogCmd
-  - com.elastic.support.diagnostics.commands.SystemCallsCmd
-  - com.elastic.support.diagnostics.commands.SystemCallsWithDependenciesCmd
-  - com.elastic.support.diagnostics.commands.SystemDigestCmd
-  - com.elastic.support.diagnostics.commands.SecurityPropertiesCmd
-  - com.elastic.support.diagnostics.commands.ScrubLogsCmd
-
-remote:
-  - com.elastic.support.diagnostics.commands.GenerateManifestCmd
-  - com.elastic.support.diagnostics.commands.RestModuleSetupCmd
-  - com.elastic.support.diagnostics.commands.VersionAndClusterNameCheckCmd
-  - com.elastic.support.diagnostics.commands.RunClusterQueriesCmd
-  - com.elastic.support.diagnostics.commands.RunCommercialQueriesCmd
-
-logstash:
-  - com.elastic.support.diagnostics.commands.GenerateManifestCmd
-  - com.elastic.support.diagnostics.commands.RestModuleSetupCmd
-  - com.elastic.support.diagnostics.commands.RunLogstashQueriesCmd
-
-elastic-threads:
-  - com.elastic.support.diagnostics.commands.GenerateManifestCmd
-  - com.elastic.support.diagnostics.commands.RestModuleSetupCmd
-  - com.elastic.support.diagnostics.commands.VersionAndClusterNameCheckCmd
-  - com.elastic.support.diagnostics.commands.RunClusterQueriesCmd
-  - com.elastic.support.diagnostics.commands.HostIdentifierCmd
-  - com.elastic.support.diagnostics.commands.SystemCallsCmd
-  - com.elastic.support.diagnostics.commands.SystemCallsWithDependenciesCmd
-  - com.elastic.support.diagnostics.commands.ScrubLogsCmd
-
-syscalls:
-  - com.elastic.support.diagnostics.commands.GenerateManifestCmd
-  - com.elastic.support.diagnostics.commands.SystemCallsCmd
-
+aliases:
+  - Apple
+  - Apricot
+  - Avocado
+  - Banana
+  - Bilberry
+  - Blackberry
+  - Blackcurrant
+  - Blueberry
+  - Boysenberry
+  - CrabApples
+  - Currant
+  - Cherry
+  - Cherimoya
+  - ChicoFruit
+  - Cloudberry
+  - Coconut
+  - Cranberry
+  - Cucumber
+  - CustardApple
+  - Damson
+  - Date
+  - Dragonfruit
+  - Durian
+  - Elderberry
+  - Feijoa
+  - Fig
+  - Goji berry
+  - Gooseberry
+  - Grape
+  - Raisin
+  - Grapefruit
+  - Guava
+  - Honeyberry
+  - Huckleberry
+  - Jabuticaba
+  - Jackfruit
+  - Jambul
+  - Jujube
+  - JuniperBerry
+  - Kiwano
+  - Kiwifruit
+  - Kumquat
+  - Lemon
+  - Lime
+  - Loquat
+  - Longan
+  - Lychee
+  - Mango
+  - Mangosteen
+  - Marionberry
+  - Melon
+  - Cantaloupe
+  - Honeydew
+  - Watermelon
+  - Miracle fruit
+  - Mulberry
+  - Nectarine
+  - Nance
+  - Olive
+  - Orange
+  - BloodOrange
+  - Clementine
+  - Mandarine
+  - Tangerine
+  - Papaya
+  - Passionfruit
+  - Peach
+  - Pear
+  - Persimmon
+  - Plantain
+  - Plum
+  - Prune
+  - Pineapple
+  - Plumcot
+  - Pomegranate
+  - Pomelo
+  - PurpleMangosteen
+  - Quince
+  - Raspberry
+  - Salmonberry
+  - Rambutan
+  - Redcurrant
+  - SalalBerry
+  - Salak
+  - Satsuma
+  - Soursop
+  - StarFruit
+  - gonzoberry
+  - Strawberry
+  - Tamarillo
+  - Tamarind
+  - Ugli fruit
+  - Yuzu
+  - Avocado
+  - ChiliPepper
+  - CornKernel
+  - Cucumber
+  - Eggplant
+  - Olive
+  - Pea
+  - Pumpkin
+  - Squash
+  - Tomato
