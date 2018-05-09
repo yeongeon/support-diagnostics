@@ -43,12 +43,9 @@ public class HashUtilTest {
     @Test
     public void testHash(){
         Map<String, String> dic = new LinkedHashMap<>();
-
         for (String host: HOSTS) {
-            dic.put(host, HashUtil.name(host, NAMES));
+            logger.info("{}: {}", host, HashUtil.peak(host, dic, NAMES));
         }
-
-        logger.info("dic: {}", dic);
     }
 
 }

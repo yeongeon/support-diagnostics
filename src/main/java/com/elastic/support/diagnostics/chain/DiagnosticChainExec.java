@@ -16,11 +16,11 @@ public class DiagnosticChainExec {
 
       try {
          Map<String, Object> aliases = JsonYamlUtils.readYamlFromClasspath("aliases.yml", false);
-         if (context.getInputParams().useAliases() && aliases.size() == 0) {
+         if (context.getInputParams().useAliases() && aliases.containsKey("aliases") && ((List)aliases.get("aliases")).size()==0) {
             logger.error("Required config file aliases.yml was not found or empty.");
             throw new RuntimeException("Empty aliases.yml");
          }
-         context.setAttribute("aliases", aliases);
+         context.setAliases((List)aliases.get("aliases"));
 
          Map<String, Object> diags = JsonYamlUtils.readYamlFromClasspath("diags.yml", true);
          if (diags.size() == 0) {

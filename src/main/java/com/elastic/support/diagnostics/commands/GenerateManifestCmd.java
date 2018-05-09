@@ -9,10 +9,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 public class GenerateManifestCmd extends AbstractDiagnosticCmd {
 
@@ -27,9 +24,9 @@ public class GenerateManifestCmd extends AbstractDiagnosticCmd {
          manifest.put("collectionDate", SystemProperties.getUtcDateString());
          InputParams params = context.getInputParams();
 
-         Map<String, Object> aliases = context.getMappedAttribute("aliases");
-         if(context.getInputParams().useAliases() && aliases!=null){
-
+         List<String> aliases = context.getAliases();
+         if(context.getInputParams().useAliases() && aliases.size()>0){
+            logger.error( String.format(">>>>> %s", aliases ));
          }
 
          manifest.put("inputs", params.toString());

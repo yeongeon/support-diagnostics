@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Map;
 
 public class HashUtil {
 
@@ -44,13 +45,20 @@ public class HashUtil {
                 | (bKey[0] & 0xFF);
     }
 
-    public static int position(final String k, final int availables){
+    private static int position(final String k, final int availables){
         long hash = HashUtil.hash(k);
         return (int) (hash%availables);
     }
 
-    public static String name(final String k, final List<String> names){
-        int ptr = position(k, names.size());
-        return names.remove(ptr);
+    private static String name(final String k, final List<String> candidates){
+        int ptr = position(k, candidates.size());
+        return candidates.remove(ptr);
+    }
+
+    public static String peak(final String k, final Map<String, String> dic, final List<String> candidates){
+        if(dic.containsKey(k)){
+            return dic.get(k);
+        }
+        return name(k, candidates);
     }
 }

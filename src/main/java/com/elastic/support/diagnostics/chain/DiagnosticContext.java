@@ -30,6 +30,7 @@ public class DiagnosticContext {
    int currentRep;
    boolean localAddressLocated = true;
    boolean diagNodeFound = false;
+   List<String> aliases = new LinkedList<>();
 
    public DiagnosticContext(InputParams inputs){
       this.inputParams = inputs;
@@ -173,6 +174,14 @@ public class DiagnosticContext {
 
    public void setDiagNodeFound(boolean diagNodeFound) {
       this.diagNodeFound = diagNodeFound;
+   }
+
+   public List<String> getAliases() {
+      return aliases;
+   }
+
+   public void setAliases(List<String> aliases) {
+      this.aliases = aliases;
    }
 
    public Map<String, Object> getAttributes() {
