@@ -31,6 +31,7 @@ public class DiagnosticContext {
    boolean localAddressLocated = true;
    boolean diagNodeFound = false;
    List<String> aliases = new LinkedList<>();
+   Map<String, String> aliaseDic = new LinkedHashMap<>();
 
    public DiagnosticContext(InputParams inputs){
       this.inputParams = inputs;
@@ -184,7 +185,15 @@ public class DiagnosticContext {
       this.aliases = aliases;
    }
 
-   public Map<String, Object> getAttributes() {
+    public Map<String, String> getAliaseDic() {
+        return aliaseDic;
+    }
+
+    public void setAliaseDic(Map<String, String> aliaseDic) {
+        this.aliaseDic = aliaseDic;
+    }
+
+    public Map<String, Object> getAttributes() {
        return attributes;
    }
 

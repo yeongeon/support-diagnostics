@@ -59,6 +59,9 @@ public class HashUtil {
         if(dic.containsKey(k)){
             return dic.get(k);
         }
-        return name(k, candidates);
+        String n = name(k, candidates);
+        dic.put(k, n);
+
+        return n;
     }
 }
