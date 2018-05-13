@@ -1,6 +1,7 @@
 package com.elastic.support.diagnostics.commands;
 
 import com.elastic.support.diagnostics.chain.DiagnosticContext;
+import com.elastic.support.util.AliasUtil;
 import com.elastic.support.util.SystemProperties;
 import oshi.hardware.CentralProcessor.TickType;
 import oshi.json.SystemInfo;
@@ -46,31 +47,31 @@ public class SystemDigestCmd extends AbstractDiagnosticCmd {
          OutputStream outputStream = new FileOutputStream(sysFile);
          BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
 
-         printComputerSystem(writer, hal.getComputerSystem());
+         printComputerSystem(context, writer, hal.getComputerSystem());
          writer.newLine();
 
-         printProcessor(writer, hal.getProcessor());
+         printProcessor(context, writer, hal.getProcessor());
          writer.newLine();
 
-         printMemory(writer, hal.getMemory());
+         printMemory(context, writer, hal.getMemory());
          writer.newLine();
 
-         printCpu(writer, hal.getProcessor());
+         printCpu(context, writer, hal.getProcessor());
          writer.newLine();
 
-         printProcesses(writer, os, hal.getMemory());
+         printProcesses(context, writer, os, hal.getMemory());
          writer.newLine();
 
-         printDisks(writer, hal.getDiskStores());
+         printDisks(context, writer, hal.getDiskStores());
          writer.newLine();
 
-         printFileSystem(writer, os.getFileSystem());
+         printFileSystem(context, writer, os.getFileSystem());
          writer.newLine();
 
-         printNetworkInterfaces(writer, hal.getNetworkIFs());
+         printNetworkInterfaces(context, writer, hal.getNetworkIFs());
          writer.newLine();
 
-         printNetworkParameters(writer, os.getNetworkParams());
+         printNetworkParameters(context, writer, os.getNetworkParams());
          writer.newLine();
 
          writer.close();
@@ -84,14 +85,15 @@ public class SystemDigestCmd extends AbstractDiagnosticCmd {
       return true;
    }
 
-   private static void printComputerSystem(BufferedWriter writer, final ComputerSystem computerSystem) throws Exception{
+   private static void printComputerSystem(DiagnosticContext context, BufferedWriter writer, final ComputerSystem computerSystem) throws Exception{
 
       writer.write("Computer System");
       writer.newLine();
       writer.write("----------------");
       writer.newLine();
 
-      writer.write("manufacturer: " + computerSystem.getManufacturer());
+      String manufacturer = AliasUtil.alias(context, computerSystem.getManufacturer());
+      writer.write("manufacturer: " + manufacturer);
       writer.newLine();
 
       writer.write("model: " + computerSystem.getModel());
@@ -137,7 +139,7 @@ public class SystemDigestCmd extends AbstractDiagnosticCmd {
 
    }
 
-   private static void printProcessor(BufferedWriter writer, CentralProcessor processor) throws Exception {
+   private static void printProcessor(DiagnosticContext context, BufferedWriter writer, CentralProcessor processor) throws Exception {
 
       writer.write("Processors");
       writer.newLine();
@@ -160,7 +162,7 @@ public class SystemDigestCmd extends AbstractDiagnosticCmd {
 
    }
 
-   private static void printProcesses(BufferedWriter writer, OperatingSystem os, GlobalMemory memory) throws Exception{
+   private static void printProcesses(DiagnosticContext context, BufferedWriter writer, OperatingSystem os, GlobalMemory memory) throws Exception{
       writer.write("Processes");
       writer.newLine();
       writer.write("----------");
@@ -181,7 +183,7 @@ public class SystemDigestCmd extends AbstractDiagnosticCmd {
       }
    }
 
-   private static void printMemory(BufferedWriter writer, GlobalMemory memory) throws Exception {
+   private static void printMemory(DiagnosticContext context, BufferedWriter writer, GlobalMemory memory) throws Exception {
       writer.write("Memory");
       writer.newLine();
       writer.write("-------");
@@ -197,7 +199,7 @@ public class SystemDigestCmd extends AbstractDiagnosticCmd {
 
    }
 
-   private static void printCpu(BufferedWriter writer, CentralProcessor processor) throws Exception{
+   private static void printCpu(DiagnosticContext context, BufferedWriter writer, CentralProcessor processor) throws Exception{
       writer.write("CPU");
       writer.newLine();
       writer.write("---");
@@ -255,7 +257,7 @@ public class SystemDigestCmd extends AbstractDiagnosticCmd {
 
    }
 
-   private static void printDisks(BufferedWriter writer, HWDiskStore[] diskStores) throws Exception{
+   private static void printDisks(DiagnosticContext context, BufferedWriter writer, HWDiskStore[] diskStores) throws Exception{
       writer.write("Disks");
       writer.newLine();
       writer.write("-----");
@@ -282,7 +284,7 @@ public class SystemDigestCmd extends AbstractDiagnosticCmd {
       }
    }
 
-   private static void printFileSystem(BufferedWriter writer,  FileSystem fileSystem) throws Exception{
+   private static void printFileSystem(DiagnosticContext context, BufferedWriter writer,  FileSystem fileSystem) throws Exception{
       writer.write("File System");
       writer.newLine();
       writer.write("-------------");
@@ -301,7 +303,7 @@ public class SystemDigestCmd extends AbstractDiagnosticCmd {
       }
    }
 
-   private static void printNetworkParameters(BufferedWriter writer, NetworkParams networkParams) throws Exception{
+   private static void printNetworkParameters(DiagnosticContext context, BufferedWriter writer, NetworkParams networkParams) throws Exception{
       writer.write("Network Parameters");
       writer.newLine();
       writer.write("----------------");
@@ -314,18 +316,18 @@ public class SystemDigestCmd extends AbstractDiagnosticCmd {
 
    }
 
-   private static void printNetworkInterfaces(BufferedWriter writer,NetworkIF[] networkIFs)  throws Exception {
+   private static void printNetworkInterfaces(DiagnosticContext context, BufferedWriter writer,NetworkIF[] networkIFs)  throws Exception {
       writer.write("Network interfaces");
       writer.newLine();
       writer.write("----------------");
       writer.newLine();
 
       for (NetworkIF net : networkIFs) {
-         writer.write(String.format(" Name: %s (%s)%n", net.getName(), net.getDisplayName()));
-         writer.write(String.format("   MAC Address: %s %n", net.getMacaddr()));
+         writer.write(String.format(" Name: %s (%s)%n", AliasUtil.alias(context, net.getName()), AliasUtil.alias(context, net.getDisplayName())));
+         writer.write(String.format("   MAC Address: %s %n", AliasUtil.alias(context, net.getMacaddr())));
          writer.write(String.format("   MTU: %s, Speed: %s %n", net.getMTU(), FormatUtil.formatValue(net.getSpeed(), "bps")));
-         writer.write(String.format("   IPv4: %s %n", Arrays.toString(net.getIPv4addr())));
-         writer.write(String.format("   IPv6: %s %n", Arrays.toString(net.getIPv6addr())));
+         writer.write(String.format("   IPv4: %s %n", AliasUtil.alias(context, Arrays.toString(net.getIPv4addr()))));
+         writer.write(String.format("   IPv6: %s %n", AliasUtil.alias(context, Arrays.toString(net.getIPv6addr()))));
          boolean hasData = net.getBytesRecv() > 0 || net.getBytesSent() > 0 || net.getPacketsRecv() > 0
             || net.getPacketsSent() > 0;
          writer.write(String.format("   Traffic: received %s/%s%s; transmitted %s/%s%s %n",

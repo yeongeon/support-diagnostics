@@ -1,9 +1,13 @@
 package com.elastic.support.diagnostics;
 
 import com.beust.jcommander.*;
-import com.elastic.support.util.SystemProperties;
+import com.elastic.support.diagnostics.chain.DiagnosticContext;
+import com.elastic.support.util.AliasUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class InputParams {
+   protected final Logger logger = LogManager.getLogger();
 
    @Parameter(names = {"-?", "--help"}, description = "Help contents.", help = true)
    private boolean help;
@@ -67,6 +71,16 @@ public class InputParams {
 
    private boolean secured = false;
    private boolean wasPortSet = false;
+
+   private DiagnosticContext ctx;
+
+   public DiagnosticContext getCtx() {
+      return ctx;
+   }
+
+   public void setCtx(DiagnosticContext ctx) {
+      this.ctx = ctx;
+   }
 
    public boolean useAliases() {
       return aliases;
@@ -260,7 +274,7 @@ public class InputParams {
       return "InputParams{" +
          "help=" + help +
          ", outputDir='" + outputDir + '\'' +
-         ", host='" + host + '\'' +
+         ", host='" + (AliasUtil.alias(this.ctx, host)) + '\'' +
          ", port=" + port +
          ", isSsl=" + isSsl +
          ", diagType='" + diagType + '\'' +

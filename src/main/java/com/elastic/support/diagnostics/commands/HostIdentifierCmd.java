@@ -2,6 +2,7 @@ package com.elastic.support.diagnostics.commands;
 
 import com.elastic.support.diagnostics.Constants;
 import com.elastic.support.diagnostics.chain.DiagnosticContext;
+import com.elastic.support.util.AliasUtil;
 import com.elastic.support.util.JsonYamlUtils;
 import com.elastic.support.util.SystemUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -66,7 +67,7 @@ public class HostIdentifierCmd extends AbstractDiagnosticCmd {
                context.setAttribute("diagNode", n);
                JsonNode jnode = n.path("process");
                String nodeName = n.path("name").asText();
-               context.setAttribute("diagNodeName", nodeName);
+               context.setAttribute("diagNodeName", AliasUtil.alias(context, nodeName));
                String pid = SystemUtils.toString(jnode.path("id").asText(), "0");
                context.setPid(pid);
                diagNodeFound = true;

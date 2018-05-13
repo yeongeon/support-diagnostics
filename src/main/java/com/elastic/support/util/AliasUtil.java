@@ -1,15 +1,19 @@
 package com.elastic.support.util;
 
+import com.elastic.support.diagnostics.chain.DiagnosticContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 
-public class HashUtil {
+public class AliasUtil {
+    protected static final Logger logger = LogManager.getLogger();
 
     private static MessageDigest md5Digest = null;
-
     static {
         try {
             md5Digest = MessageDigest.getInstance("MD5");
@@ -46,7 +50,7 @@ public class HashUtil {
     }
 
     private static int position(final String k, final int availables){
-        long hash = HashUtil.hash(k);
+        long hash = AliasUtil.hash(k);
         return (int) (hash%availables);
     }
 
@@ -59,9 +63,15 @@ public class HashUtil {
         if(dic.containsKey(k)){
             return dic.get(k);
         }
-        String n = name(k, candidates);
+        String n = String.format("%s", name(k, candidates));
         dic.put(k, n);
 
         return n;
+    }
+
+    public static String alias(DiagnosticContext ctx, String org) {
+        logger.info("ctx: {}", ctx);
+        logger.info("org: {}", org);
+        return (!ctx.getInputParams().useAliases()||ctx==null?new String(org):peak(new String(org), ctx.getAliaseDic(), ctx.getAliases()));
     }
 }

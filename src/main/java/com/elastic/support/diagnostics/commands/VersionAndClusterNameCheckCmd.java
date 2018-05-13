@@ -2,6 +2,7 @@ package com.elastic.support.diagnostics.commands;
 
 import com.elastic.support.diagnostics.chain.DiagnosticContext;
 import com.elastic.support.diagnostics.InputParams;
+import com.elastic.support.util.AliasUtil;
 import com.elastic.support.util.RestModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,6 +23,7 @@ public class VersionAndClusterNameCheckCmd extends AbstractDiagnosticCmd {
       logger.info("Trying REST Endpoint.");
 
       try {
+          logger.info("input: {}", inputs);
          RestModule restModule = context.getRestModule();
          String result = restModule.submitRequest(inputs.getProtocol(), inputs.getHost(), inputs.getPort(), "");
          ObjectMapper mapper = new ObjectMapper();
@@ -29,7 +31,7 @@ public class VersionAndClusterNameCheckCmd extends AbstractDiagnosticCmd {
          String clusterName = (String) resultMap.get("cluster_name");
          Map ver = (Map) resultMap.get("version");
          String versionNumber = (String) ver.get("number");
-         context.setClusterName(clusterName);
+         context.setClusterName(AliasUtil.alias(context, clusterName));
          context.setVersion(versionNumber);
 
       } catch (Exception e) {

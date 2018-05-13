@@ -1,6 +1,5 @@
 package com.elastic.support.diagnostics.commands;
 
-import com.elastic.support.diagnostics.Constants;
 import com.elastic.support.diagnostics.InputParams;
 import com.elastic.support.util.SystemProperties;
 import com.elastic.support.diagnostics.chain.DiagnosticContext;
@@ -11,8 +10,6 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class GenerateManifestCmd extends AbstractDiagnosticCmd {
 
@@ -26,19 +23,11 @@ public class GenerateManifestCmd extends AbstractDiagnosticCmd {
          manifest.put("diagToolVersion", getToolVersion());
          manifest.put("collectionDate", SystemProperties.getUtcDateString());
          InputParams params = context.getInputParams();
-
-         List<String> aliases = context.getAliases();
-         if(context.getInputParams().useAliases() && aliases.size()>0){
-            logger.error( String.format(">>>>> %s", aliases ));
-         }
-         Pattern pattern = Pattern.compile(Constants.MATCH_REGEX);
-         Matcher match = pattern.matcher(params.toString());
-
-         if(match.find()){
-            logger.error("match.group(0): {}", match.group());
-         }
-
-          manifest.put("inputs", params.toString());
+         logger.info("GenerateManifestCmd.execute(...) A: {}", params);
+         params.setCtx(context);
+         logger.info("GenerateManifestCmd.execute(...) B: {}", params);
+         manifest.put("inputs", params.toString());
+         logger.info("manifest.get(\"inputs\"): {}", manifest.get("inputs"));
 
          File manifestFile = new File(context.getTempDir() + SystemProperties.fileSeparator + "manifest.json");
          mapper.writeValue(manifestFile, manifest);
