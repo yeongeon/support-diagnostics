@@ -3,11 +3,12 @@ package com.elastic.support.diagnostics;
 import com.beust.jcommander.JCommander;
 import com.elastic.support.diagnostics.chain.DiagnosticChainExec;
 import com.elastic.support.diagnostics.chain.DiagnosticContext;
+import com.elastic.support.util.ArchiveUtils;
 import com.elastic.support.util.SystemProperties;
+import com.elastic.support.util.SystemUtils;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.io.FileUtils;
@@ -31,8 +32,9 @@ public class Diagnostic {
    private DiagnosticChainExec dc = new DiagnosticChainExec();
    private DiagnosticContext ctx = new DiagnosticContext(inputs);
    private Logger logger = LogManager.getLogger();
+   private boolean proceedToRun = true;
 
-   public Diagnostic(String args[]) {
+   Diagnostic(String args[]) {
 
       logger.info("Validating inputs...");
       ctx.setInputParams(inputs);
@@ -41,16 +43,24 @@ public class Diagnostic {
 
       try {
          jc.parse(args);
+
          if (!validateAuth(inputs)) {
             throw new RuntimeException("Inputs error: If authenticating both username and password are required.");
          }
+
+         if (inputs.isHelp()) {
+            jc.usage();
+            proceedToRun = false;
+            return;
+         }
+
          // Set up the output directory
          logger.info("Creating temp directory.");
          createOutputDir(ctx);
          logger.info("Created temp directory: {}", ctx.getTempDir());
 
          // Start logging to file
-         createFileAppender(ctx);
+         SystemUtils.createFileAppender(ctx.getTempDir(), "diagnostics.log");
          logger.info("Configuring log file.");
 
       } catch (RuntimeException re) {
@@ -62,14 +72,13 @@ public class Diagnostic {
          return;
       }
 
-      if (inputs.isHelp()) {
-         jc.usage();
-         return;
-      }
-
    }
 
-   public void exec() {
+   public boolean isProceedToRun(){
+      return proceedToRun;
+   }
+
+   void exec() {
 
       try {
          int reps = inputs.getReps();
@@ -98,7 +107,7 @@ public class Diagnostic {
          logger.error("Execution Error", re);
       } finally {
          createArchive(ctx);
-         cleanup(ctx);
+         SystemUtils.cleanup(ctx.getTempDir());
       }
    }
 
@@ -152,39 +161,6 @@ public class Diagnostic {
       }
    }
 
-   private void createFileAppender(DiagnosticContext ctx) {
-
-      String logDir = ctx.getTempDir() + SystemProperties.fileSeparator + "diagnostics.log";
-
-      final LoggerContext context = (LoggerContext) LogManager.getContext(false);
-      final Configuration config = context.getConfiguration();
-      /*Layout layout = PatternLayout.createLayout("%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n", null, config, null,
-         null,true, true, null, null );*/
-      Layout layout = PatternLayout.newBuilder()
-         .withConfiguration(config)
-         .withPattern("%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n")
-         .build();
-
-      Appender appender = FileAppender.newBuilder().setConfiguration(config)
-         .withFileName(logDir)
-         .withAppend(false)
-         .withLocking(false)
-         .withName("File")
-         .withImmediateFlush(true)
-         .withIgnoreExceptions(false)
-         .withBufferedIo(false)
-         .withBufferSize(0)
-         .withLayout(layout)
-         .withAdvertise(false).build();
-
-      appender.start();
-      config.addAppender(appender);
-      AppenderRef ref = AppenderRef.createAppenderRef("File", null, null);
-      config.getRootLogger().addAppender(appender, null, null);
-      context.updateLoggers();
-
-   }
-
    private void createArchive(DiagnosticContext context) {
 
       logger.info("Archiving diagnostic results.");
@@ -201,19 +177,8 @@ public class Diagnostic {
          }
 
          String dir = context.getTempDir();
-         File srcDir = new File(dir);
-         String filename = dir + "-" + archiveFilename + ".tar.gz";
-
-         FileOutputStream fout = new FileOutputStream(filename);
-         CompressorOutputStream cout = new GzipCompressorOutputStream(fout);
-         TarArchiveOutputStream taos = new TarArchiveOutputStream(cout);
-
-         taos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
-         taos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
-         archiveResults(archiveFilename, taos, srcDir, "", true);
-         taos.close();
-
-         logger.info("Archive: " + filename + " was created");
+         ArchiveUtils archiveUtils = new ArchiveUtils();
+         archiveUtils.createArchive(dir, archiveFilename);
 
       } catch (Exception ioe) {
          logger.error("Couldn't create archive. {}", ioe);
@@ -221,55 +186,4 @@ public class Diagnostic {
 
    }
 
-   private void archiveResults(String archiveFilename, TarArchiveOutputStream taos, File file, String path, boolean append) {
-
-      String relPath = "";
-
-      try {
-         if (append) {
-            relPath = path + "/" + file.getName() + "-" + archiveFilename;
-         } else {
-            relPath = path + "/" + file.getName();
-         }
-         TarArchiveEntry tae = new TarArchiveEntry(file, relPath);
-         taos.putArchiveEntry(tae);
-
-         if (file.isFile()) {
-            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-            IOUtils.copy(bis, taos);
-            taos.closeArchiveEntry();
-            bis.close();
-
-         } else if (file.isDirectory()) {
-            taos.closeArchiveEntry();
-            for (File childFile : file.listFiles()) {
-               archiveResults(archiveFilename, taos, childFile, relPath, false);
-            }
-         }
-      } catch (IOException e) {
-         logger.error("Archive Error", e);
-      }
-   }
-
-   private void cleanup(DiagnosticContext context) {
-
-      String dir = context.getTempDir();
-      try {
-         LoggerContext lc = (LoggerContext) LogManager.getContext(false);
-         final Configuration config = lc.getConfiguration();
-         Appender appndr = config.getAppender("File");
-         appndr.stop();
-         config.getRootLogger().removeAppender("File");
-         File tempdir = new File(dir);
-         tempdir.setWritable(true, false);
-         FileUtils.deleteDirectory(tempdir);
-      } catch (IOException e) {
-         String msg = "Error deleting temporary work directory";
-         logger.error(msg, e);
-      }
-
-      logger.info("Temp directory {} was deleted.", dir);
-
-
-   }
 }

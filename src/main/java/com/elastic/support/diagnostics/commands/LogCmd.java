@@ -84,7 +84,9 @@ public class LogCmd extends AbstractDiagnosticCmd {
                }
 
                processLogVersions(patternString, maxLogs, logDir,logDest);
-               processLogVersions("gc*.log.*", maxGcLogs, logDir,logDest);
+
+               patternString = "gc*.log.*";
+               processLogVersions(patternString, maxGcLogs, logDir, logDest);
 
             }
          } else {
@@ -93,7 +95,7 @@ public class LogCmd extends AbstractDiagnosticCmd {
          }
 
       } catch (Exception e) {
-         logger.error("Error processing logs: Error encountered reading directory. Does the account you are running under have sufficient permisssions to read the log directories?");
+         logger.error("Error processing logs: Error encountered reading directory. Does the account you are running under have sufficient permissions to read the log directories?");
          logger.error("Log directory: " + logs);
       }
 
@@ -121,13 +123,13 @@ public class LogCmd extends AbstractDiagnosticCmd {
 
    private void processLogVersions(String pattern, int maxToGet, File logDir, File logDest) throws Exception{
 
-      FileFilter gcLogFilter = new RegexFileFilter(pattern);
-      File[] gcLogList = logDir.listFiles(gcLogFilter);
-      Arrays.sort(gcLogList, LastModifiedFileComparator.LASTMODIFIED_REVERSE);
+      FileFilter logFileFilter = new RegexFileFilter(pattern);
+      File[] logFileList = logDir.listFiles(logFileFilter);
+      Arrays.sort(logFileList, LastModifiedFileComparator.LASTMODIFIED_REVERSE);
       int limit = maxToGet, count = 0;
-      for (File gcLog : gcLogList) {
+      for (File logfile : logFileList) {
          if (count < limit) {
-            FileUtils.copyFileToDirectory(gcLog, logDest);
+            FileUtils.copyFileToDirectory(logfile, logDest);
             count++;
          } else {
             break;
