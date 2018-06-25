@@ -300,6 +300,7 @@ public class InputParams {
          ", skipAccessLogs=" + accessLogs +
          ", secured=" + secured +
          ", wasPortSet=" + wasPortSet +
+         ", aliases=" + aliases +
          '}';
    }
 }

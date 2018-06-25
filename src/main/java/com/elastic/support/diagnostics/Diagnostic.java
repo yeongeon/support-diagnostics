@@ -40,6 +40,7 @@ public class Diagnostic {
       ctx.setInputParams(inputs);
       JCommander jc = new JCommander(inputs);
       jc.setCaseSensitiveOptions(true);
+      inputs.setCtx(this.ctx);
 
       try {
          jc.parse(args);

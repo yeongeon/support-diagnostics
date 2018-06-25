@@ -70,8 +70,6 @@ public class AliasUtil {
     }
 
     public static String alias(DiagnosticContext ctx, String org) {
-        logger.info("ctx: {}", ctx);
-        logger.info("org: {}", org);
         return (!ctx.getInputParams().useAliases()||ctx==null?new String(org):peak(new String(org), ctx.getAliaseDic(), ctx.getAliases()));
     }
 }
