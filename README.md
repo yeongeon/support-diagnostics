@@ -4,7 +4,6 @@ It will execute a series of REST API calls to the running cluster, run a number 
 
 * Compatible with versions 6.x, 5.x, 2.x, 1.x
   * Note: the version of this tool is independent of the version of Elasticsearch/Logstash targeted.
-* No runtime requirements or dependencies other than a recent JRE
 * OS specific versions are not required.
 * The application can be run from any directory on the machine.  It does not require installation to a specific location, and the only requirement is that the user has read access to the Elasticsearch artifacts, write access to the chosen output directory, and sufficient disk space for the generated archive.
 * Detects multiple nodes and network interfaces per host.
@@ -17,7 +16,8 @@ It will execute a series of REST API calls to the running cluster, run a number 
 * `cd` to the top level repo directory and type `mvn package`.
 
 ## Run Requirements
-* JDK **strongly recommended** - Oracle or OpenJDK, 8-10
+* JDK **strongly recommended** - Oracle or OpenJDK, 1.8-10
+  * **Important Note:** The 1.7 version of the JDK is no longer supported. If you are running a 1.7 JRE/JDK you must upgrade or run an older version of the diagnostic.
 * A JRE may be used, however certain functionality such as jstack generated thread dumps will not be available.
 * If you are running a package installation under Linux you MUST run the command with elevated sudo privileges. Otherwise the utility will not be able to run the system queries.
 * It is recommended that you set the JAVA_HOME environment variable.  It should point to the Java installation directory.  If JAVA_HOME is not found, the utility will attempt to locate a distribution but if errors occur it may be necessary to set this manually.
@@ -30,6 +30,11 @@ It will execute a series of REST API calls to the running cluster, run a number 
 * Download [support-diagnostics-latest-dist.zip](https://github.com/elastic/elasticsearch-support-diagnostics/releases/latest) from the Github release area.
 * Unzip the support-diagnostics-`<version>`-dist.zip into the directory from which you intend to run the application.
 * Switch to the diagnostics distribution directory.
+
+## Version check
+As a first step the diagnostic will check the Github repo for the current released version, and if not the same as the one running will:
+* Provide the URL for the current release.
+* Ask the user whether they wish to continue. 
 
 ## Usage - Simplest Case
 * Run the application via the diagnostics.sh or diagnostics.bat script. The host name or IP address used by the HTTP connector of the node is required.
@@ -71,16 +76,19 @@ It will execute a series of REST API calls to the running cluster, run a number 
 * Because of the potential size access logs are no longer collected by default. If you need these use the --accessLogs option to have them copied.
 
 ## Alternate Usages
+
 ### Remote
 * If you do not wish to run the utility on the host the node to be queried resides on, and wish to run it from a different host such as your workstation, you may use the --type remote option.
 * This will execute only the REST API calls and will not attempt to execute local system calls or collect log files. 
 #### Remote Example
-    * ./diagnostics.sh --host 10.0.0.20 --type remote
+     ./diagnostics.sh --host 10.0.0.20 --type remote
+    
 
 ### Logstash Diagnostics
 * Use the --type logstash argument to get diagnostic information from a running Logstash process. It will query the process in a manner similar to the Elasticsearch REST API calls.
 * The default port will be 9600. This can be modified at startup, or will be automatically incremented if you start multiple Logstash processes on the same host. You can connect to these other Logstash processes with the --port option.
 * Available for 5.0 or greater.
+* System statistics relevant for the platform will also be collected, similar to the standard diagnostic type.
 #### Logstash Examples
     * sudo ./diagnostics.sh --host localhost --type logstash
     * sudo ./diagnostics.sh --host localhost --type logstash --port 9610
@@ -109,9 +117,11 @@ It will execute a series of REST API calls to the running cluster, run a number 
 * If you wish to take a heap dump of a running process use the --heapdump --nodename processoption
 
 # Troubleshooting
-  * The file: diagnostic.log file will be generated in the installation directory of the diagnostic utility - the output of the console, which will include both progress and error messages, will be replicated in that file.  It will be appended for each run and rolled over daily if not removed.
+  * The file: diagnostic.log file will be generated  and included in the archive. In all but the worst case an archive will be created. Some messages will be written to the console output but granualar errors and stack traces will only be written to this log.
+  * If you get a message saying that it can't find a class file, you probably downloaded the src zip instead of the one with "-dist" in the name. Download that and try it again.
+  * If you get a message saying that it can't locate the diagnostic node, it usually means you are running the diagnostic on a host containing a different node than the one you are pointing to. Try running in remote node or changing the host you are executing on.
   * Make sure the account you are running from has read access to all the Elasticsearch log directories.  This account must have write access to any directory you are using for output.
   * Make sure you have a valid Java installation that the JAVA_HOME environment variable is pointing to.
   * If you are not in the installation directory CD in and run it from there.
   * If you encounter OutOfMemoryExceptions, use the DIAG_JAVA_OPTS environment variable to set an -Xmx value greater than the standard 2g.  Start with -Xmx4g and move up from there if necessary.
-  * All errors are logged to diagnostics.log and will be written to the working directory.  If reporting an issue make sure to include that.
+  * If reporting an issue make sure to include that.

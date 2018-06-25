@@ -2,7 +2,7 @@ package com.elastic.support.diagnostics.chain;
 
 import com.elastic.support.diagnostics.InputParams;
 import com.elastic.support.diagnostics.Constants;
-import com.elastic.support.util.RestModule;
+import com.elastic.support.util.RestExec;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +15,7 @@ public class DiagnosticContext {
 
    protected Map<String, Object> attributes = new LinkedHashMap<>();
    InputParams inputParams;
-   RestModule restModule;
+   RestExec restExec;
    Map config;
    List<String> messages = new ArrayList<String>();
    String version = "";
@@ -26,9 +26,13 @@ public class DiagnosticContext {
    String nodeString = "";
    String hostNode = "";
    String diagName = Constants.ES_DIAG;
+   String diagNode = "";
    String pid = "0";
+   String logDir = "";
+   String esHome = "";
    int currentRep;
    boolean localAddressLocated = true;
+
    boolean diagNodeFound = false;
    List<String> aliases = new LinkedList<>();
    Map<String, String> aliaseDic = new LinkedHashMap<>();
@@ -45,8 +49,6 @@ public class DiagnosticContext {
       this.localAddressLocated = localAddressLocated;
    }
 
-   Set<String> hostIpList;
-
    public String getDiagName() {
       return diagName;
    }
@@ -55,15 +57,15 @@ public class DiagnosticContext {
       this.diagName = diagName;
    }
 
+   public String getDiagNode() {
+      return diagNode;
+   }
+
+   public void setDiagNode(String diagNode) {
+      this.diagNode = diagNode;
+   }
+
    private static final String verTwo = "2(\\.\\d+)+";
-
-   public Set<String> getHostIpList() {
-      return hostIpList;
-   }
-
-   public void setHostIpList(Set<String> hostIpList) {
-      this.hostIpList = hostIpList;
-   }
 
    public String getPid() {
       return pid;
@@ -117,12 +119,12 @@ public class DiagnosticContext {
       this.inputParams = inputParams;
    }
 
-   public RestModule getRestModule() {
-      return restModule;
+   public RestExec getRestExec() {
+      return restExec;
    }
 
-   public void setRestModule(RestModule restModule) {
-      this.restModule = restModule;
+   public void setRestExec(RestExec restExec) {
+      this.restExec = restExec;
    }
 
    public String getVersion() {
@@ -169,12 +171,20 @@ public class DiagnosticContext {
       this.currentRep = currentRep;
    }
 
-   public boolean isDiagNodeFound() {
-      return diagNodeFound;
+   public void setLogDir(String logDir) {
+      this.logDir = logDir;
    }
 
-   public void setDiagNodeFound(boolean diagNodeFound) {
-      this.diagNodeFound = diagNodeFound;
+   public String getLogDir() {
+      return logDir;
+   }
+
+   public String getEsHome() {
+      return esHome;
+   }
+
+   public void setEsHome(String esHome) {
+      this.esHome = esHome;
    }
 
    public List<String> getAliases() {

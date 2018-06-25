@@ -2,8 +2,8 @@ package com.elastic.support.diagnostics.commands;
 
 import com.elastic.support.diagnostics.Constants;
 import com.elastic.support.diagnostics.InputParams;
-import com.elastic.support.util.SystemProperties;
 import com.elastic.support.diagnostics.chain.DiagnosticContext;
+import com.elastic.support.util.SystemProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -44,8 +44,7 @@ public class GenerateManifestCmd extends AbstractDiagnosticCmd {
 
    public String getToolVersion() {
       String ver = GenerateManifestCmd.class.getPackage().getImplementationVersion();
-      return "6.1";
-      //return (ver != null) ? ver : "Debug";
+      return (ver != null) ? ver : "Debug";
    }
 
    public String getIsoDate() {
